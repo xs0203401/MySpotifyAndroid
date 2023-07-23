@@ -15,41 +15,50 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.laioffer.spotify.network.NetworkApi
+import com.laioffer.spotify.network.NetworkModule
 import com.laioffer.spotify.ui.theme.SpotifyTheme
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-// customized extend AppCompatActivity
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var api: NetworkApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContent {
-//            SpotifyTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colors.background
-//                ) {
-//                    Greeting("Android")
-//                }
-//            }
-//        }
 
         setContentView(R.layout.activity_main)
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
 
-        val navHostFragment = supportFragmentManager
+        // controller
+        val navHostFragment =supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-
         val navController = navHostFragment.navController
-        navController.setGraph(R.navigation.nav_graph)
 
+        // data model
+        navController.setGraph(R.navigation.nav_graph)
         NavigationUI.setupWithNavController(navView, navController)
 
         // https://stackoverflow.com/questions/70703505/navigationui-not-working-correctly-with-bottom-navigation-view-implementation
-        navView.setOnItemSelectedListener{
-            NavigationUI.onNavDestinationSelected(it, navController)
-            navController.popBackStack(it.itemId, inclusive = false)
+        navView.setOnItemSelectedListener{ menuItem ->
+            NavigationUI.onNavDestinationSelected(menuItem, navController)
+            navController.popBackStack(menuItem.itemId, inclusive = false)
             true
+        }
+
+        // Test retrofit
+        GlobalScope.launch(Dispatchers.IO) {
+//            val api = NetworkModule.provideRetrofit().create(NetworkApi::class.java)
+            val task = api.getHomeFeed()
+            val response = task.execute()
+            val sections = response.body()
+            Log.d("Network", sections.toString())
         }
     }
 }
