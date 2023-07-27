@@ -27,9 +27,9 @@ class PlaylistFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme(colors = darkColors()) {
-//                    PlaylistScreen(
-//                        playlistViewModel = viewModel
-//                    )
+                    PlaylistScreen(
+                        playlistViewModel = viewModel
+                    )
                 }
             }
         }
@@ -38,7 +38,8 @@ class PlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("PlaylistFragment", navArgs.album.toString())
-//        viewModel.fetchPlaylist(navArgs.album)
+        viewModel.fetchPlaylist(navArgs.album)
+
     }
 
 }
