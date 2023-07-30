@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
-    private val repository: PlaylistRepository,
+    private val playlistRepository: PlaylistRepository,
     private val favoriteAlbumRepository: FavoriteAlbumRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(PlaylistUiState(Album.empty()))
@@ -25,10 +25,11 @@ class PlaylistViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(album = album)
 
         viewModelScope.launch {
-            val playlist = repository.getPlaylist(album.id)
+            val playlist = playlistRepository.getPlaylist(album.id)
             _uiState.value = _uiState.value.copy(playlist = playlist.songs)
             Log.d("PlaylistViewModel", _uiState.value.toString())
         }
+
         viewModelScope.launch {
             favoriteAlbumRepository.isFavoriteAlbum(album.id).collect{
                 _uiState.value = _uiState.value.copy(
@@ -36,6 +37,7 @@ class PlaylistViewModel @Inject constructor(
                 )
             }
         }
+
     }
 
     fun toggleFavorite(isFavorite: Boolean) {
