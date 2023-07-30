@@ -12,8 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-private val favoriteAlbumRepository: FavoriteAlbumRepository
+    private val favoriteAlbumRepository: FavoriteAlbumRepository
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(FavoriteUiState(emptyList()))
     val uiState: StateFlow<FavoriteUiState> = _uiState
 
@@ -30,3 +31,4 @@ private val favoriteAlbumRepository: FavoriteAlbumRepository
 data class FavoriteUiState(
     val albums: List<Album>
 )
+
