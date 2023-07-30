@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.laioffer.spotify.database.DatabaseDao
+import com.laioffer.spotify.datamodel.Album
 import com.laioffer.spotify.network.NetworkApi
 import com.laioffer.spotify.network.NetworkModule
 import com.laioffer.spotify.ui.theme.SpotifyTheme
@@ -22,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,6 +32,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var api: NetworkApi
+    @Inject
+    lateinit var databaseDao: DatabaseDao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,6 +66,21 @@ class MainActivity : AppCompatActivity() {
             val sections = response.body()
             Log.d("Network", sections.toString())
         }
+        // remember it runs everytime you start the app
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                val album = Album(
+                    id = 1,
+                    name =  "Hexagonal",
+                    year = "2008",
+                    cover = "https://upload.wikimedia.org/wikipedia/en/6/6d/Leessang-Hexagonal_%28cover%29.jpg",
+                    artists = "Lesssang",
+                    description = "Leessang (Korean: 리쌍) was a South Korean hip hop duo, composed of Kang Hee-gun (Gary or Garie) and Gil Seong-joon (Gil)"
+                )
+                databaseDao.favoriteAlbum(album)
+            }
+        }
+
     }
 }
 
