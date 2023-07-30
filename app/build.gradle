@@ -110,4 +110,6 @@ dependencies {
 
 
     // exoplayer
+    def exoplayerVersion = "2.18.2"
+    implementation "com.google.android.exoplayer:exoplayer-core:${exoplayerVersion}"
 }
